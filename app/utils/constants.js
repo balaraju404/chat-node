@@ -1,0 +1,13 @@
+global.USERS = "users"
+global.FRIENDS = "friends"
+global.INVITATIONS = "invitations"
+global.MESSAGES = "messages"
+global.GROUPS = "groups"
+global.GROUPS_MSG = "groups_msg"
+
+global.TIMEZONE = "Asia/Kolkata"
+global.USER_ID_KEY = "user_id"
+global.USER_NAME_KEY = "user_name"
+global.TOKEN_USERID_KEY = "token_userid"
+global.TOKEN_USERNAME_KEY = "token_username"
+global.TOKEN_USER_DATA_KEY = "token_user_data"
