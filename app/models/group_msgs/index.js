@@ -39,7 +39,7 @@ exports.delete = async (reqParams) => {
 
 exports.details = async (reqParams) => {
  try {
-  const group_id = reqParams["group_id"]
+  const group_id = mongoObjId(reqParams["group_id"])
   const user_id = mongoObjId(reqParams["user_id"])
   let pipeline = [
    { $match: { group_id } },
