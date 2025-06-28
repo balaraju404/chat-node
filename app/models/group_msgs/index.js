@@ -2,7 +2,7 @@ const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
 exports.send = async (reqParams) => {
  try {
-  const group_id = reqParams["group_id"]
+  const group_id = mongoObjId(reqParams["group_id"])
   const msg = reqParams["msg"]
   const texted_by = mongoObjId(reqParams["user_id"])
   const seen_by = [texted_by]
