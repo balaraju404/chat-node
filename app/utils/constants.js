@@ -3,7 +3,7 @@ global.FRIENDS = "friends"
 global.INVITATIONS = "invitations"
 global.MESSAGES = "messages"
 global.GROUPS = "groups"
-global.GROUPS_MSG = "groups_msg"
+global.GROUP_MESSAGES = "group_messages"
 
 global.TIMEZONE = "Asia/Kolkata"
 global.USER_ID_KEY = "user_id"

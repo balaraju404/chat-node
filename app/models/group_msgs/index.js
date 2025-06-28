@@ -7,7 +7,7 @@ exports.send = async (reqParams) => {
   const texted_by = mongoObjId(reqParams["user_id"])
   const seen_by = [texted_by]
   const created_at = new Date()
-  const result = await mongoQuery.insertOne(GROUPS_MSG, { group_id, msg, texted_by, seen_by, created_at })
+  const result = await mongoQuery.insertOne(GROUP_MESSAGES, { group_id, msg, texted_by, seen_by, created_at })
   return result || []
  } catch (error) {
   throw error
@@ -20,7 +20,7 @@ exports.update = async (reqParams) => {
   if ("msg" in reqParams) updateObj["msg"] = reqParams["msg"]
   updateObj["created_at"] = new Date()
   const whr = { "_id": mongoObjId(reqParams["group_msg_id"]) }
-  const result = await mongoQuery.updateOne(GROUPS_MSG, whr, updateObj)
+  const result = await mongoQuery.updateOne(GROUP_MESSAGES, whr, updateObj)
   return result || []
  } catch (error) {
   throw error
@@ -30,7 +30,7 @@ exports.update = async (reqParams) => {
 exports.delete = async (reqParams) => {
  try {
   const _id = mongoObjId(reqParams["group_msg_id"])
-  const result = await mongoQuery.deleteOne(GROUPS_MSG, { _id })
+  const result = await mongoQuery.deleteOne(GROUP_MESSAGES, { _id })
   return result || []
  } catch (error) {
   throw error
@@ -56,10 +56,10 @@ exports.details = async (reqParams) => {
    { $project: { msg: 1, texted_by: 1, username: 1, created_at: 1 } },
    { $sort: { created_at: 1 } }
   ]
-  const result = await mongoQuery.getDetails(GROUPS_MSG, pipeline)
+  const result = await mongoQuery.getDetails(GROUP_MESSAGES, pipeline)
   const filter = { group_id, seen_by: { $nin: [user_id] } }
   const update = { $addToSet: { seen_by: user_id } }
-  await mongoQuery.updateMany(GROUPS_MSG, filter, update, 0)
+  await mongoQuery.updateMany(GROUP_MESSAGES, filter, update, 0)
   return result || []
  } catch (error) {
   throw error
@@ -89,7 +89,7 @@ exports.dashboard = async (reqParams) => {
     }
    }
   ]
-  const lastMessages = await mongoQuery.getDetails(GROUPS_MSG, pipeline)
+  const lastMessages = await mongoQuery.getDetails(GROUP_MESSAGES, pipeline)
   const result = {
    group_id: group_list[0]._id,
    group_name: group_list[0].groupname,
