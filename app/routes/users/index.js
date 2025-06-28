@@ -22,16 +22,6 @@ router.post("/details", [], (req, res) => {
  }
 })
 
-router.post("/paging", [], (req, res) => {
- try {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  usersCtrl.paging(req, res)
- } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ message: error.message })
- }
-})
-
 router.post("/others", [], (req, res) => {
  try {
   const errors = validationResult(req)

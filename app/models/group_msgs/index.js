@@ -65,38 +65,3 @@ exports.details = async (reqParams) => {
   throw error
  }
 }
-
-exports.dashboard = async (reqParams) => {
- try {
-  const user_id = mongoObjId(reqParams["user_id"])
-  const group_list = await mongoQuery.getDetails(GROUPS, [{ $match: { members: user_id } }, { $project: { admins: 0, members: 0, created_by: 0, created_at: 0 } },])
-
-  if (!group_list.length) return { data: [], count: 0 }
-  const matchedgroupIds = group_list.map(group => group._id.toString())
-  const pipeline = [
-   {
-    $match: {
-     group_id: { $in: matchedgroupIds }, seen_by: { $ne: user_id }
-    }
-   },
-   { $sort: { created_at: -1 } },
-   {
-    $group: {
-     _id: "$group_id",
-     last_msg: { $first: "$msg" },
-     last_msg_time: { $first: "$created_at" },
-     count: { $sum: 1 }
-    }
-   }
-  ]
-  const lastMessages = await mongoQuery.getDetails(GROUP_MESSAGES, pipeline)
-  const result = {
-   group_id: group_list[0]._id,
-   group_name: group_list[0].groupname,
-   last_message: lastMessages
-  }
-  return result
- } catch (error) {
-  throw error
- }
-}

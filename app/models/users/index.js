@@ -50,24 +50,6 @@ exports.getUsers = async (reqParams) => {
  }
 }
 
-exports.paging = async (reqParams) => {
- try {
-  const { page = 1, limit = 10, isNeedPwd = true } = reqParams
-  const skip = (page - 1) * limit
-  let searchKey = ""
-  if ("username" in reqParams) searchKey = reqParams["username"].trim()
-  if (searchKey !== "") whr["username"] = new RegExp(searchKey, "i")
-
-  const pipeline = [{ $skip: skip }, { $limit: limit }]
-  if (!isNeedPwd) pipeline.push({ $project: { password: 0 } })
-
-  const result = await mongoQuery.getDetails(USERS, pipeline)
-  return { "data": result, "count": result.length }
- } catch (error) {
-  throw error
- }
-}
-
 exports.others = async (reqParams) => {
  try {
   const user_id = mongoObjId(reqParams["user_id"])
@@ -136,7 +118,6 @@ exports.friendsList = async (reqParams) => {
    { $project: { _id: 0, password: 0, is_verified: 0, email: 0 } },
    { $sort: { username: 1 } }
   ]
-
   const result = await mongoQuery.getDetails(USERS, pipeline)
   return { data: result, count: result.length }
  } catch (error) {

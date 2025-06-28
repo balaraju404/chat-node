@@ -2,16 +2,6 @@ const router = require("express").Router()
 const { check, validationResult } = require("express-validator")
 const groupsCtrl = require("../../controllers/groups")
 
-router.post("/details", [], (req, res, next) => {
- try {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  groupsCtrl.details(req, res)
- } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ message: error.message })
- }
-})
-
 router.post("/create", [
  check("groupname").trim().isString().isLength({ min: 4 }).withMessage("Invalid groupname")
 ], (req, res, next) => {
@@ -83,6 +73,16 @@ router.post("/friends", [
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
   groupsCtrl.friends(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
+router.post("/details", [], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  groupsCtrl.details(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message })
  }

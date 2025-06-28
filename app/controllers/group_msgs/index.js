@@ -39,13 +39,3 @@ exports.details = async (req, res) => {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
 }
-
-exports.dashboard = async (req, res) => {
- try {
-  const reqParams = req["body"] || {}
-  const result = await groupMsgsMdl.dashboard(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "data": result })
- } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
- }
-}

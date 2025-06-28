@@ -1,25 +1,5 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
-exports.details = async (reqParams) => {
- try {
-  const whr = {}
-  if ("group_id" in reqParams) whr["_id"] = mongoObjId(reqParams["group_id"])
-  if ("user_id" in reqParams) whr["members"] = mongoObjId(reqParams["user_id"])
-
-  const pipeline = [
-   { $match: whr },
-   { $addFields: { group_id: "$_id" } },
-   { $project: { _id: 0 } },
-   { $sort: { created_at: 1 } }
-  ]
-  const result = await mongoQuery.getDetails(GROUPS, pipeline)
-  return result || []
- } catch (error) {
-  throw error
- }
-}
-
-
 exports.create = async (reqParams) => {
  try {
   const groupname = reqParams["groupname"]
@@ -52,17 +32,6 @@ exports.add = async (reqParams) => {
  }
 }
 
-exports.leave = async (reqParams) => {
- try {
-  const group_id = mongoObjId(reqParams["group_id"])
-  const user_id = mongoObjId(reqParams["user_id"])
-  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { members: user_id, admins: user_id } }, 0)
-  return result || []
- } catch (error) {
-  throw error
- }
-}
-
 exports.update = async (reqParams) => {
  try {
   const updateObj = {}
@@ -71,6 +40,17 @@ exports.update = async (reqParams) => {
   updateObj["created_at"] = new Date()
   const whr = { "_id": mongoObjId(reqParams["group_id"]) }
   const result = await mongoQuery.updateOne(GROUPS, whr, updateObj)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.leave = async (reqParams) => {
+ try {
+  const group_id = mongoObjId(reqParams["group_id"])
+  const user_id = mongoObjId(reqParams["user_id"])
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { members: user_id, admins: user_id } }, 0)
   return result || []
  } catch (error) {
   throw error
@@ -134,6 +114,25 @@ exports.friends = async (reqParams) => {
    }
   ]
   const result = await mongoQuery.getDetails(FRIENDS, pipeline)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.details = async (reqParams) => {
+ try {
+  const whr = {}
+  if ("group_id" in reqParams) whr["_id"] = mongoObjId(reqParams["group_id"])
+  if ("user_id" in reqParams) whr["members"] = mongoObjId(reqParams["user_id"])
+
+  const pipeline = [
+   { $match: whr },
+   { $addFields: { group_id: "$_id" } },
+   { $project: { _id: 0 } },
+   { $sort: { created_at: 1 } }
+  ]
+  const result = await mongoQuery.getDetails(GROUPS, pipeline)
   return result || []
  } catch (error) {
   throw error
