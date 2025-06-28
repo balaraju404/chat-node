@@ -11,7 +11,7 @@ router.use("/users", users)
 router.use("/invite", invitations)
 router.use("/msgs", msgs)
 router.use("/groups", groups)
-router.use("/group_msgs", group_msgs)
+router.use("/group_chat", group_msgs)
 
 router.get("/", (req, res) => {
  res.status(200).json({ message: "Welcome to the API" })
