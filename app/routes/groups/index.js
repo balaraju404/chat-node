@@ -14,17 +14,54 @@ router.post("/create", [
  }
 })
 
-router.put("/add", [
+router.post("/add_members", [
  check("group_id").isMongoId().withMessage("Invalid group_id"),
- check("friends_ids").isArray().withMessage("friends_ids must be an array"),
- check("friends_ids.*").isMongoId().withMessage("Invalid friend id"),
- check("admin_ids").isArray().withMessage("admin_ids must be an array"),
- check("admin_ids.*").isMongoId().withMessage("Invalid admin id")
+ check("members").isArray().withMessage("members must be an array"),
+ check("members.*").isMongoId().withMessage("Invalid friend id"),
 ], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  groupsCtrl.add(req, res)
+  groupsCtrl.addMembers(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
+router.post("/remove_member", [
+ check("group_id").isMongoId().withMessage("Invalid group_id"),
+ check("friend_id").isMongoId().withMessage("Invalid friend id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  groupsCtrl.removeMember(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
+router.post("/add_admin", [
+ check("group_id").isMongoId().withMessage("Invalid group_id"),
+ check("friend_id").isMongoId().withMessage("Invalid friend id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  groupsCtrl.addAdmin(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
+router.post("/remove_admin", [
+ check("group_id").isMongoId().withMessage("Invalid group_id"),
+ check("friend_id").isMongoId().withMessage("Invalid friend id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  groupsCtrl.removeAdmin(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message })
  }

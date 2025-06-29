@@ -15,17 +15,44 @@ exports.create = async (reqParams) => {
  }
 }
 
-exports.add = async (reqParams) => {
+exports.addMembers = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
-  const isAdmin = reqParams["is_admin"] || 0
-  const members = reqParams["friends_ids"].map(m => mongoObjId(m))
-  const admins = reqParams["admin_ids"].map(m => mongoObjId(m))
-  let update = { members }
-  if (isAdmin == 1) {
-   update = { admins }
-  }
-  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, update)
+  const members = reqParams["members"].map(m => mongoObjId(m))
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $push: { members: { $each: members } } }, 0)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.removeMember = async (reqParams) => {
+ try {
+  const group_id = mongoObjId(reqParams["group_id"])
+  const friend_id = mongoObjId(reqParams["friend_id"])
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { members: friend_id, admins: friend_id } }, 0)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.addAdmin = async (reqParams) => {
+ try {
+  const group_id = mongoObjId(reqParams["group_id"])
+  const friend_id = mongoObjId(reqParams["friend_id"])
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $push: { admins: friend_id } }, 0)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.removeAdmin = async (reqParams) => {
+ try {
+  const group_id = mongoObjId(reqParams["group_id"])
+  const friend_id = mongoObjId(reqParams["friend_id"])
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { admins: friend_id } }, 0)
   return result || []
  } catch (error) {
   throw error
@@ -109,7 +136,7 @@ exports.friends = async (reqParams) => {
      "_id": "$joinedData._id",
      "username": "$joinedData.username",
      "gender_id": "$joinedData.gender_id",
-     "id_add": "$joinedData.is_add"
+     "is_add": "$joinedData.is_add"
     }
    }
   ]
@@ -129,6 +156,28 @@ exports.details = async (reqParams) => {
   const pipeline = [
    { $match: whr },
    { $addFields: { group_id: "$_id" } },
+   {
+    $lookup: {
+     from: USERS,
+     let: { memberIds: "$members" },
+     pipeline: [
+      { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } },
+      { $project: { _id: 0, user_id: "$_id", username: 1, gender_id: 1 } }
+     ],
+     as: "members_info"
+    }
+   },
+   {
+    $lookup: {
+     from: USERS,
+     let: { adminIds: "$admins" },
+     pipeline: [
+      { $match: { $expr: { $in: ["$_id", "$$adminIds"] } } },
+      { $project: { _id: 0, user_id: "$_id", username: 1, gender_id: 1 } }
+     ],
+     as: "admins_info"
+    }
+   },
    { $project: { _id: 0 } },
    { $sort: { created_at: 1 } }
   ]
