@@ -2,7 +2,6 @@ const mongoQuery = require("@cs7player/login-lib").mongoQuery
 const pbkdf = require("@cs7player/login-lib").pbkdf
 const otp = require("@cs7player/login-lib").otp
 const jwt = require("@cs7player/login-lib").jwt
-const otpJson = require("../../utils/otp.json")
 
 exports.signUp = async (reqParams) => {
  try {

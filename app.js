@@ -1,9 +1,9 @@
 const loginLib = require("@cs7player/login-lib")
 const express = require("express")
 const cors = require("cors")
+const http = require("http");
 const app = express()
 require("./app/utils/constants")
-
 const allow_origns = ALLOW_ORIGNS
 const corsOptions = {
  origin: (origin, callback) => {
@@ -19,12 +19,14 @@ app.use(cors(corsOptions))
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // For form data
 app.use(loginLib.jwt.verifyToken) // verify token
-
+const server = http.createServer(app);
 // routes
+const { initIO } = require("./app/utils/socketConnection");
+initIO(server, corsOptions);
 const routes = require("./app/routes")
 app.use(routes)
 
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
  try {
   // Await DB connection setup
   await loginLib.mongoConnection()

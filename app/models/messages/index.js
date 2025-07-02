@@ -1,4 +1,5 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
+const { getIO, getSocketIdFromUserId } = require("../../utils/socketConnection");
 
 exports.send = async (reqParams) => {
  try {
@@ -8,6 +9,12 @@ exports.send = async (reqParams) => {
   const is_seen = 0
   const created_at = new Date()
   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
+  const msg_id = result['insertedId'];
+  const io = getIO();
+  const socketId = getSocketIdFromUserId(reqParams["receiver_id"]);
+  if (socketId) {
+    io.to(socketId).emit("msg", {_id:msg_id,sender_id:reqParams["user_id"], receiver_id:reqParams["receiver_id"], msg, is_seen, created_at});
+  }
   return result
  } catch (error) {
   throw error
@@ -43,7 +50,7 @@ exports.details = async (reqParams) => {
   const friend_id = mongoObjId(reqParams["friend_id"])
   const pipeline = [
    { $match: { $or: [{ $and: [{ "sender_id": user_id }, { "receiver_id": friend_id }] }, { $and: [{ "receiver_id": user_id }, { "sender_id": friend_id }] }] } },
-   { $sort: { created_at: -1 } }
+   { $sort: { created_at: 1 } }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline)
   const filter = { receiver_id: user_id, sender_id: friend_id, is_seen: 0 }
