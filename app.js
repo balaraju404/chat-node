@@ -7,8 +7,6 @@ require("./app/utils/constants")
 const allow_origns = ALLOW_ORIGNS
 const corsOptions = {
  origin: (origin, callback) => {
-  console.log(origin,allow_origns);
-  
   if (!origin || allow_origns.includes(origin) || IS_ALLOW_ORIGN == 1) {
    callback(null, true)
   } else {
