@@ -1,4 +1,5 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
+const { getIO, getSocketIdFromUserId } = require("../../utils/socketConnection");
 
 exports.chats = async (reqParams) => {
  try {
@@ -79,6 +80,10 @@ exports.chats = async (reqParams) => {
    }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline2)
+  result.forEach(m => {
+   const socketId = getSocketIdFromUserId(m.friend_id);
+   m.is_active = socketId ? 1 : 0;
+  });
   return result
  } catch (error) {
   throw error

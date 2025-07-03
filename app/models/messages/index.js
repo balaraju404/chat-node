@@ -13,7 +13,8 @@ exports.send = async (reqParams) => {
   const io = getIO();
   const socketId = getSocketIdFromUserId(reqParams["receiver_id"]);
   if (socketId) {
-    io.to(socketId).emit("msg", {_id:msg_id,sender_id:reqParams["user_id"], receiver_id:reqParams["receiver_id"], msg, is_seen, created_at});
+   io.to(socketId).emit("msg", { _id: msg_id, sender_id: reqParams["user_id"], receiver_id: reqParams["receiver_id"], msg, is_seen, created_at });
+   await mongoQuery.updateOne(MESSAGES, { _id: mongoObjId(result['insertedId']) }, { is_seen: 1 })
   }
   return result
  } catch (error) {
