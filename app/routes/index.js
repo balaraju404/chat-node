@@ -7,6 +7,7 @@ const groups = require("./groups")
 const group_msgs = require("./group_msgs")
 const dashboard = require("./dashboard")
 const device_token = require("./device_token")
+const notifications = require('./notifications')
 
 router.use("/login", login)
 router.use("/users", users)
@@ -16,6 +17,7 @@ router.use("/groups", groups)
 router.use("/group_chat", group_msgs)
 router.use("/dashboard", dashboard)
 router.use("/device_token", device_token)
+router.use('/notifications', notifications)
 
 router.get("/", (req, res) => {
  res.status(200).json({ message: "Welcome to the API" })

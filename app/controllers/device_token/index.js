@@ -22,7 +22,7 @@ exports.update = async (req, res) => {
 
 exports.del = async (req, res) => {
  try {
-  const reqParams = req["params"] || {}
+  const reqParams = req["body"] || {}
   const result = await deviceToken.del(reqParams)
   res.status(200).json({ status: result["status"], msg: result["msg"] })
  } catch (error) {
