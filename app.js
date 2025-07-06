@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true })) // For form data
 app.use(loginLib.jwt.verifyToken) // verify token
 const server = http.createServer(app);
 // routes
-const { initIO } = require("./app/utils/socketConnection");
+const { initIO } = require("./app/utils/socketConnection")
 initIO(server, corsOptions);
 const routes = require("./app/routes")
 app.use(routes)

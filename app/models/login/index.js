@@ -2,6 +2,7 @@ const mongoQuery = require("@cs7player/login-lib").mongoQuery
 const pbkdf = require("@cs7player/login-lib").pbkdf
 const otp = require("@cs7player/login-lib").otp
 const jwt = require("@cs7player/login-lib").jwt
+const deviceToken = require("../device_token")
 
 exports.signUp = async (reqParams) => {
  try {
@@ -54,7 +55,13 @@ exports.login = async (reqParams) => {
   delete userObj["_id"]
   delete userObj["password"]
   const tokenRes = await jwt.generateToken(userObj)
-  if (tokenRes) return { "msg": "Login successful.", "data": userObj, "token": tokenRes }
+  if (tokenRes) {
+   if ("device_token" in reqParams) {
+    const params = { user_id: reqParams["user_id"], device_token: reqParams["device_token"] }
+    await deviceToken.add(params)
+   }
+   return { "msg": "Login successful.", "data": userObj, "token": tokenRes }
+  }
   else return { "msg": tokenRes["msg"], "status": tokenRes["status_code"] }
  } catch (error) {
   throw error

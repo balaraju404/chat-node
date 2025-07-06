@@ -11,3 +11,6 @@ global.USER_NAME_KEY = "user_name"
 global.TOKEN_USERID_KEY = "token_userid"
 global.TOKEN_USERNAME_KEY = "token_username"
 global.TOKEN_USER_DATA_KEY = "token_user_data"
+
+global.FIREBASE_SERVICE_ACCOUNT_PATH = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+global.PROJECT_ID = process.env.PROJECT_ID
