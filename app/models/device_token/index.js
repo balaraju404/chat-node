@@ -9,7 +9,7 @@ exports.add = async (reqParams) => {
    status: 1
   }
 
-  const result = await mongoQuery.insertOne(TBL_DEVICE_TOKEN, insertRec)
+  const result = await mongoQuery.insertOne(TBL_DEVICE_TOKENS, insertRec)
   return result
  } catch (error) {
   throw error
@@ -24,7 +24,7 @@ exports.update = async (reqParams) => {
   const updateRec = { modified_at: new Date(), status: status }
   const whr = { _id: mongoObjId(device_token_id) }
 
-  await mongoQuery.updateOne(TBL_DEVICE_TOKEN, whr, updateRec)
+  await mongoQuery.updateOne(TBL_DEVICE_TOKENS, whr, updateRec)
   const msg = "Record Updated Successfully"
   return { status: true, msg: msg, "device_token_id": device_token_id }
  } catch (error) {
@@ -34,7 +34,7 @@ exports.update = async (reqParams) => {
 exports.del = async (reqParams) => {
  try {
   const whr = { _id: mongoObjId(reqParams["device_token_id"]) || 0 }
-  await mongoQuery.deleteOne(TBL_DEVICE_TOKEN, whr)
+  await mongoQuery.deleteOne(TBL_DEVICE_TOKENS, whr)
   return { status: true, msg: "Record Deleted Successfully" }
  } catch (error) {
   throw error
@@ -54,7 +54,7 @@ exports.details = async (reqParams) => {
    { $sort: { created_at: -1 } }
   ]
 
-  const result = await mongoQuery.getDetails(TBL_DEVICE_TOKEN, pipeline)
+  const result = await mongoQuery.getDetails(TBL_DEVICE_TOKENS, pipeline)
   return { status: true, data: result }
  } catch (error) {
   return { status: false, msg: "Internal server error", error }
