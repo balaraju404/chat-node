@@ -12,7 +12,7 @@ exports.send = async (reqParams) => {
   const data = result["data"] || []
   const deviceTokenList = data.map(item => item["device_token"])
   const msgContent = { title: title, message: message }
-  await notificationConn.sendPushNotification(deviceTokenList, msgContent)
+  if (deviceTokenList.length) await notificationConn.sendPushNotification(deviceTokenList, msgContent)
  } catch (error) {
   throw error
  }
