@@ -57,7 +57,7 @@ exports.login = async (reqParams) => {
   const tokenRes = await jwt.generateToken(userObj)
   if (tokenRes) {
    if ("device_token" in reqParams) {
-    const params = { user_id: reqParams["user_id"], device_token: reqParams["device_token"] }
+    const params = { user_id: userObj["user_id"], device_token: reqParams["device_token"] }
     await deviceToken.add(params)
    }
    return { "msg": "Login successful.", "data": userObj, "token": tokenRes }
