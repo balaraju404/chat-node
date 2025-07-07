@@ -1,12 +1,18 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
-const { getIO, getSocketIdFromUserId } = require("../../utils/socketConnection");
+const { getSocketIdFromUserId } = require("../../utils/socketConnection");
 
 exports.chats = async (reqParams) => {
  try {
   const user_id = mongoObjId(reqParams["user_id"])
   const pipeline1 = [{ $match: { user_id } }, { $project: { "_id": 0, "user_id": 0 } }]
-  const friendsList = await mongoQuery.getDetails(FRIENDS, pipeline1)
-  const friendsIds = friendsList[0]["friends"]
+  let friendsIds = []
+  if ("friend_id" in reqParams) {
+   const friend_id = mongoObjId(reqParams["friend_id"])
+   friendsIds.push(friend_id)
+  } else {
+   const friendsList = await mongoQuery.getDetails(FRIENDS, pipeline1)
+   friendsIds = friendsList[0]["friends"]
+  }
   const pipeline2 = [
    {
     $match: {
