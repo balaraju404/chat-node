@@ -14,7 +14,7 @@ exports.like = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await postsMdl.like(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": true , "msg": "UPDATE_SUCCESS" || "Post Liked"})
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": true , "msg": result || UPDATE_SUCCESS })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }

@@ -20,22 +20,22 @@ exports.like = async (reqParams) => {
  try {
   const user_id = mongoObjId(reqParams["user_id"]);
   const post_id = mongoObjId(reqParams["post_id"]);
-
-  const post = await mongoQuery.findOne(POSTS, { _id: post_id });
-  if (!post) {
-   return "Post not found.";
+  const is_like = reqParams["is_like"];
+  let updateResult;
+  if (is_like === 1) {
+   updateResult = await mongoQuery.updateOne(POSTS, { _id: post_id }, { $pull: { like: user_id } }, 0);
+   if (updateResult.modifiedCount === 0) {
+    return "Post was not previously liked.";
+   }
+   return "Post unliked successfully.";
+  } else {
+   updateResult = await mongoQuery.updateOne(POSTS, { _id: post_id }, { $addToSet: { like: user_id } }, 0);
+   if (updateResult.modifiedCount === 0) {
+    return "Post already liked.";
+   }
+   return "Post liked successfully.";
   }
-  if (post.like && post.like.includes(user_id)) {
-   return "Post already liked.";
-  }
-
-  const updateResult = await mongoQuery.updateOne(POSTS, { _id: post_id }, { $addToSet: { like: user_id }, }, 0);
-
-  if (updateResult.modifiedCount === 0) {
-   return "Post already liked.";
-  };
-  return "Post liked successfully.";
  } catch (err) {
   throw err;
  }
-}
+};
