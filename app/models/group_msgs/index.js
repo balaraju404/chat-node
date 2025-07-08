@@ -10,26 +10,14 @@ exports.send = async (reqParams) => {
   const created_at = new Date()
   const result = await mongoQuery.insertOne(GROUP_MESSAGES, { group_id, msg, texted_by, seen_by, created_at })
   const msg_id = result["insertedId"]
-  let pipeline  = [
-   { $match: { _id: group_id } },
-   {
-    $lookup: {
-     from: USERS,
-     localField: "members",
-     foreignField: "_id",
-     as: "joinedData"
-    }
-   },
-   { $unwind: "$joinedData" },
-   { $addFields: { "username": "$joinedData.username", "member_id": "$joinedData._id" } },
-   { $project: {joinedData:0}}
-  ]
-  const groupData = await mongoQuery.getDetails(GROUPS, pipeline)
+  const groupData = await mongoQuery.getDetails(GROUPS, [{ $match: { _id: group_id } }])
+  const memberIds = groupData[0]["members"]
+  const username = reqParams["username"]
   const io = getIO()
-  groupData.forEach((obj) => {
-   const socketId = getSocketIdFromUserId(obj["member_id"])
-   if (socketId && obj["member_id"] != reqParams["user_id"]) {
-    io.to(socketId).emit("group_msg", { _id: msg_id, group_id: reqParams["group_id"], username: obj["username"], msg, created_at })
+  memberIds.forEach((id) => {
+   const socketId = getSocketIdFromUserId(id)
+   if (socketId && id != reqParams["user_id"]) {
+    io.to(socketId).emit("group_msg", { _id: msg_id, group_id: reqParams["group_id"], username: username, msg, created_at })
    }
   });
   return result || []
