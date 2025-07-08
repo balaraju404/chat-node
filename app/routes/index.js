@@ -9,6 +9,7 @@ const dashboard = require("./dashboard")
 const device_token = require("./device_token")
 const notifications = require('./notifications')
 const posts = require('./posts')
+const comments = require('./comments')
 
 router.use("/login", login)
 router.use("/users", users)
@@ -20,6 +21,7 @@ router.use("/dashboard", dashboard)
 router.use("/device_token", device_token)
 router.use('/notifications', notifications)
 router.use('/posts', posts)
+router.use('/comments', comments)
 
 router.get("/", (req, res) => {
  res.status(200).json({ message: "Welcome to the API" })

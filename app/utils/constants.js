@@ -6,6 +6,7 @@ global.GROUPS = "groups"
 global.GROUP_MESSAGES = "group_messages"
 global.TBL_DEVICE_TOKENS = "device_tokens"
 global.POSTS = "posts"
+global.COMMENTS = "comments"
 
 global.TIMEZONE = "Asia/Kolkata"
 global.USER_ID_KEY = "user_id"
