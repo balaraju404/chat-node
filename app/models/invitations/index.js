@@ -1,11 +1,15 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
+const notifications = require("../../utils/notifications")
 
 exports.invite = async (reqParams) => {
  try {
   const sender_id = mongoObjId(reqParams["user_id"])
   const receiver_id = mongoObjId(reqParams["receiver_id"])
+  const username = reqParams["username"]
   created_at = new Date()
   const result = await mongoQuery.insertOne(INVITATIONS, { sender_id, receiver_id, created_at })
+  const notificationParams = { receiver_id: reqParams["receiver_id"], title: "Friend Request", message: `${username} has sent you a friend request.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error
@@ -93,9 +97,12 @@ exports.accept = async (reqParams) => {
   const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }])
   const user_id = mongoObjId(data[0]["receiver_id"])
   const friend_id = mongoObjId(data[0]["sender_id"])
+  const username = reqParams["username"]
   const result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $addToSet: { friends: friend_id } }, 0)
   await mongoQuery.updateOne(FRIENDS, { "user_id": friend_id }, { $addToSet: { friends: user_id } }, 0)
   await mongoQuery.deleteOne(INVITATIONS, { _id })
+  const notificationParams = { receiver_id: friend_id, title: "Friend Request Accepted", message: `${username} has accepted your friend request.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error
@@ -104,8 +111,15 @@ exports.accept = async (reqParams) => {
 
 exports.decline = async (reqParams) => {
  try {
+  const flag = reqParams["flag"] || 1
+  const friend_id = reqParams["friend_id"]
+  const username = reqParams["username"]
   const _id = mongoObjId(reqParams["_id"])
   const result = await mongoQuery.deleteOne(INVITATIONS, { _id })
+  if (flag == 1) {
+   const notificationParams = { receiver_id: friend_id, title: "Friend Request Rejected", message: `${username} has rejected your friend request.` }
+   await notifications.send(notificationParams)
+  }
   return result || []
  } catch (error) {
   throw error
