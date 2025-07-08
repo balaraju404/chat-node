@@ -44,7 +44,13 @@ exports.details = async (reqParams) => {
  try {
   const whr = {}
   if ("device_token_id" in reqParams) whr["_id"] = mongoObjId(reqParams["device_token_id"])
-  if ("user_id" in reqParams) whr["user_id"] = mongoObjId(reqParams["user_id"])
+  if ("user_id" in reqParams) {
+   if (Array.isArray(reqParams["user_id"])) {
+    whr["user_id"] = { "$in": reqParams["user_id"].map(m => mongoObjId(m)) }
+   } else {
+    whr["user_id"] = mongoObjId(reqParams["user_id"])
+   }
+  }
   if ("status" in reqParams) whr["status"] = reqParams["status"] || 1
 
   const pipeline = [

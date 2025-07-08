@@ -1,5 +1,6 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 const { getIO, getSocketIdFromUserId } = require("../../utils/socketConnection");
+const notifications = require("../../utils/notifications")
 
 exports.send = async (reqParams) => {
  try {
@@ -12,14 +13,17 @@ exports.send = async (reqParams) => {
   const msg_id = result["insertedId"]
   const groupData = await mongoQuery.getDetails(GROUPS, [{ $match: { _id: group_id } }])
   const memberIds = groupData[0]["members"]
+  const groupname = reqParams["groupname"]
   const username = reqParams["username"]
+  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: memberIds, title: groupname, message: username + ": " + msg }
+  await notifications.send(notificationParams)
   const io = getIO()
-  memberIds.forEach((id) => {
+  memberIds.forEach(id => {
    const socketId = getSocketIdFromUserId(id)
    if (socketId && id != reqParams["user_id"]) {
     io.to(socketId).emit("group_msg", { _id: msg_id, group_id: reqParams["group_id"], username: username, msg, created_at })
    }
-  });
+  })
   return result || []
  } catch (error) {
   throw error
