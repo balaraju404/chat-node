@@ -7,12 +7,13 @@ exports.send = async (reqParams) => {
   const receiver_id = reqParams["receiver_id"]
   const title = reqParams["title"]
   const message = reqParams["message"]
+  const data = reqParams["data"] || {}
   const deviceParams = { user_id: receiver_id }
   const result = await deviceToken.details(deviceParams)
-  const data = result["data"] || []
-  const deviceTokenList = data.map(item => item["device_token"])
+  const tokensData = result["data"] || []
+  const deviceTokenList = tokensData.map(item => item["device_token"])
   const msgContent = { title: title, message: message }
-  if (deviceTokenList.length) await notificationConn.sendPushNotification(deviceTokenList, msgContent)
+  if (deviceTokenList.length) await notificationConn.sendPushNotification(deviceTokenList, msgContent, data)
  } catch (error) {
   throw error
  }

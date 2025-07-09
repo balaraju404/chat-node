@@ -2,7 +2,9 @@ const router = require("express").Router()
 const { check, validationResult } = require("express-validator")
 const usersCtrl = require("../../controllers/users")
 
-router.put("/update", [], (req, res) => {
+router.put("/update", [
+ check("username").optional().isLength({ min: 6, max: 16 }).withMessage("Username must be between 6 and 16 characters long")
+], (req, res) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })

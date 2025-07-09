@@ -3,10 +3,10 @@ const { check, validationResult } = require("express-validator")
 const loginCtrl = require("../../controllers/login")
 
 router.post("/sign-up", [
- check("username").isLength({ min: 6 }).withMessage("username must be at least 6 characters long"),
+ check("username").isLength({ min: 6, max: 16 }).withMessage("Username must be between 6 and 16 characters long"),
  check("email").isEmail().withMessage("Invalid email format"),
- check("gender_id").isInt({ min: 1 }).withMessage("Invalid gender id"),
- check("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long")
+ check("gender_id").isInt({ min: 1 }).withMessage("Invalid gender ID"),
+ check("password").isLength({ min: 6, max: 12 }).withMessage("Password must be between 6 and 12 characters long")
 ], (req, res, next) => {
  try {
   const errors = validationResult(req)
