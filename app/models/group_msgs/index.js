@@ -57,6 +57,8 @@ exports.details = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const user_id = mongoObjId(reqParams["user_id"])
+  const pageNum = reqParams["page_num"] || 0
+  const pageLimit = reqParams["page_limit"] || 25
   let pipeline = [
    { $match: { group_id } },
    {
@@ -70,7 +72,9 @@ exports.details = async (reqParams) => {
    { $unwind: "$joinedData" },
    { $addFields: { "username": "$joinedData.username" } },
    { $project: { msg: 1, texted_by: 1, username: 1, created_at: 1 } },
-   { $sort: { created_at: 1 } }
+   { $sort: { created_at: 1 } },
+   { $skip: ((pageNum - 1) * pageLimit) },
+   { $limit: pageLimit }
   ]
   const result = await mongoQuery.getDetails(GROUP_MESSAGES, pipeline)
   const filter = { group_id, seen_by: { $nin: [user_id] } }

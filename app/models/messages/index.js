@@ -53,9 +53,13 @@ exports.details = async (reqParams) => {
  try {
   const user_id = mongoObjId(reqParams["user_id"])
   const friend_id = mongoObjId(reqParams["friend_id"])
+  const pageNum = reqParams["page_num"] || 0
+  const pageLimit = reqParams["page_limit"] || 25
   const pipeline = [
    { $match: { $or: [{ $and: [{ "sender_id": user_id }, { "receiver_id": friend_id }] }, { $and: [{ "receiver_id": user_id }, { "sender_id": friend_id }] }] } },
-   { $sort: { created_at: 1 } }
+   { $sort: { created_at: 1 } },
+   { $skip: ((pageNum - 1) * pageLimit) },
+   { $limit: pageLimit }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline)
   const filter = { receiver_id: user_id, sender_id: friend_id, is_seen: 0 }
