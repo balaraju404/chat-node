@@ -19,8 +19,8 @@ exports.send = async (reqParams) => {
   await notifications.send(notificationParams)
   const io = getIO()
   memberIds.forEach(id => {
-   const socketId = getSocketIdFromUserId(id)
-   if (socketId && id != reqParams["user_id"]) {
+   const socketId = getSocketIdFromUserId(id.toString())
+   if (socketId && id != texted_by) {
     io.to(socketId).emit("group_msg", { _id: msg_id, group_id: reqParams["group_id"], username: username, msg, created_at })
    }
   })
