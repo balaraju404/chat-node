@@ -3,6 +3,7 @@ const postsMdl = require("../../models/posts")
 exports.createPosts = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams['username'] = req["user"]['username']
   const result = await postsMdl.createPosts(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Posted Successfully." })
  } catch (error) {
