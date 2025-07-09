@@ -30,7 +30,7 @@ tagging = async (data) => {
    const msg = `@${data['username']} tagged you on this post`
    const is_seen = 0
    const created_at = new Date()
-   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
+   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at, post_id: data["post_id"] })
    const msg_id = result["insertedId"]
    const socketId = getSocketIdFromUserId(id)
    if (socketId) {
