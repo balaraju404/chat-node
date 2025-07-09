@@ -3,6 +3,7 @@ const groupMsgsMdl = require("../../models/group_msgs")
 exports.send = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await groupMsgsMdl.send(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": "Successfully." })
  } catch (error) {

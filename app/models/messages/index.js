@@ -11,7 +11,7 @@ exports.send = async (reqParams) => {
   const created_at = new Date()
   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
   const msg_id = result["insertedId"]
-  const username = reqParams["username"] || reqParams["token_username"]
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
   const notificationParams = { sender_id: reqParams["user_id"], receiver_id: reqParams["receiver_id"], title: username, message: msg }
   await notifications.send(notificationParams)
   const io = getIO()

@@ -3,6 +3,7 @@ const msgMdl = require("../../models/messages")
 exports.send = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await msgMdl.send(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "data": result || [] })
  } catch (error) {

@@ -19,7 +19,11 @@ exports.addMembers = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const members = reqParams["members"].map(m => mongoObjId(m))
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
+  const groupname = reqParams["groupname"]
   const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $push: { members: { $each: members } } }, 0)
+  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: members, title: groupname, message: `${username} added you to the group.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error
@@ -30,7 +34,11 @@ exports.removeMember = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const friend_id = mongoObjId(reqParams["friend_id"])
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
+  const groupname = reqParams["groupname"]
   const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { members: friend_id, admins: friend_id } }, 0)
+  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: friend_id, title: groupname, message: `${username} removed you from the group.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error
@@ -41,7 +49,11 @@ exports.addAdmin = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const friend_id = mongoObjId(reqParams["friend_id"])
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
+  const groupname = reqParams["groupname"]
   const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $push: { admins: friend_id } }, 0)
+  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: friend_id, title: groupname, message: `${username} made you an admin.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error
@@ -52,7 +64,11 @@ exports.removeAdmin = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const friend_id = mongoObjId(reqParams["friend_id"])
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
+  const groupname = reqParams["groupname"]
   const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { admins: friend_id } }, 0)
+  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: friend_id, title: groupname, message: `${username} removed your admin access.` }
+  await notifications.send(notificationParams)
   return result || []
  } catch (error) {
   throw error

@@ -13,6 +13,7 @@ exports.create = async (req, res) => {
 exports.addMembers = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await groupsMdl.addMembers(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": "Members added successfully." })
  } catch (error) {
@@ -23,6 +24,7 @@ exports.addMembers = async (req, res) => {
 exports.removeMember = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await groupsMdl.removeMember(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": "Member removed successfully." })
  } catch (error) {
@@ -33,6 +35,7 @@ exports.removeMember = async (req, res) => {
 exports.addAdmin = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await groupsMdl.addAdmin(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": "Admin added successfully." })
  } catch (error) {
@@ -43,6 +46,7 @@ exports.addAdmin = async (req, res) => {
 exports.removeAdmin = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await groupsMdl.removeAdmin(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": "Admin removed successfully." })
  } catch (error) {

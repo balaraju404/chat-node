@@ -3,6 +3,7 @@ const invitationsMdl = require("../../models/invitations")
 exports.invite = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await invitationsMdl.invite(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Friend request sent successfully." })
  } catch (error) {
@@ -33,6 +34,7 @@ exports.received = async (req, res) => {
 exports.accept = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await invitationsMdl.accept(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Friend request accepted." })
  } catch (error) {
@@ -43,6 +45,7 @@ exports.accept = async (req, res) => {
 exports.decline = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
+  reqParams[TOKEN_USER_DATA_KEY] = req["user"] || {}
   const result = await invitationsMdl.decline(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Friend request declined." })
  } catch (error) {

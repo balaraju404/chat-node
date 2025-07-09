@@ -14,7 +14,7 @@ exports.send = async (reqParams) => {
   const groupData = await mongoQuery.getDetails(GROUPS, [{ $match: { _id: group_id } }])
   const memberIds = groupData[0]["members"]
   const groupname = reqParams["groupname"]
-  const username = reqParams["username"]
+  const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
   const notificationParams = { sender_id: reqParams["user_id"], receiver_id: memberIds, title: groupname, message: username + ": " + msg }
   await notifications.send(notificationParams)
   const io = getIO()
