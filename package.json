@@ -10,7 +10,7 @@
  },
  "repository": {
   "type": "git",
-  "url": "git+https://github.com/Chandra7133/chat-node.git"
+  "url": "git+https://github.com/balaraju404/chat-node.git"
  },
  "keywords": [
   "key"
@@ -18,11 +18,11 @@
  "author": "balaraju,chandra,vignesh,akhila,rajesh",
  "license": "ISC",
  "bugs": {
-  "url": "https://github.com/Chandra7133/chat-node/issues"
+  "url": "https://github.com/balaraju404/chat-node/issues"
  },
- "homepage": "https://github.com/Chandra7133/chat-node#readme",
+ "homepage": "https://github.com/balaraju404/chat-node#readme",
  "dependencies": {
-  "@cs7player/login-lib": "^1.0.10",
+  "@cs7player/login-lib": "^1.0.12",
   "axios": "^1.10.0",
   "cors": "^2.8.5",
   "dotenv": "^16.5.0",
