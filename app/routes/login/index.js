@@ -43,4 +43,28 @@ router.put("/", [
  }
 })
 
+router.post("/send_otp", [
+ check("email").isEmail().withMessage("Invalid email format"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  loginCtrl.sendOtp(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
+router.post("/verify_otp", [
+ check("otp_id").isMongoId().withMessage("Invalid otp id"),
+ check("otp").isLength({ min: 6 }).withMessage("Invalid OTP"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  loginCtrl.verifyOtp(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
 module.exports = router

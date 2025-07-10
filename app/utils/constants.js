@@ -7,6 +7,7 @@ global.GROUP_MESSAGES = "group_messages"
 global.TBL_DEVICE_TOKENS = "device_tokens"
 global.POSTS = "posts"
 global.COMMENTS = "comments"
+global.OTPS = "otps"
 
 global.TIMEZONE = "Asia/Kolkata"
 global.USER_ID_KEY = "user_id"
@@ -17,3 +18,5 @@ global.TOKEN_USER_DATA_KEY = "token_user_data"
 
 global.FIREBASE_SERVICE_ACCOUNT_PATH = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
 global.PROJECT_ID = process.env.PROJECT_ID
+global.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+global.SENDGRID_SINGLE_SENDER_MAIL = process.env.SENDGRID_SINGLE_SENDER_MAIL

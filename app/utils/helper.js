@@ -1,38 +1,12 @@
-const { getObjectId, mongoHelper } = require("../mongoose")
-
-exports.getObjectId = (id) => {
+exports.generateOTP = (length = 6) => {
  try {
-  const objectId = getObjectId(id)
-  return objectId
+  const digits = "0123456789"
+  let otp = ""
+  for (let i = 0; i < length; i++) {
+   otp += digits[Math.floor(Math.random() * 10)]
+  }
+  return otp
  } catch (error) {
   throw error
  }
 }
-
-exports.dateToString = (key, format, timezone = TIMEZONE) => {
- return mongoHelper.dateToString(key, format, timezone)
-}
-
-exports.getCreatedInfo = (reqParams) => {
- try {
-  return {
-   created_date: new Date(),
-   created_by: reqParams[TOKEN_USERNAME_KEY] || "System",
-   created_by_userid: reqParams[TOKEN_USERID_KEY] || "",
-  };
- } catch (error) {
-  throw error;
- }
-};
-
-exports.getModifiedInfo = (reqParams) => {
- try {
-  return {
-   modified_date: new Date(),
-   modified_by: reqParams[TOKEN_USERNAME_KEY] || "System",
-   modified_by_userid: reqParams[TOKEN_USERID_KEY] || "",
-  };
- } catch (error) {
-  throw error;
- }
-};

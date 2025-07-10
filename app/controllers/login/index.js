@@ -29,3 +29,23 @@ exports.forgetPassword = async (req, res) => {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
 }
+
+exports.sendOtp = async (req, res) => {
+ try {
+  const reqParams = req["body"] || {}
+  const result = await loginMdl.sendOtp(reqParams)
+  res.status(result["status"] ? SUCCESS_CODE : NOT_FOUND_CODE).json({ "status": result["status"], "msg": result["msg"], "otp_id": result["otp_id"] })
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+ }
+}
+
+exports.verifyOtp = async (req, res) => {
+ try {
+  const reqParams = req["body"] || {}
+  const result = await loginMdl.verifyOtp(reqParams)
+  res.status(result["status"] ? SUCCESS_CODE : NOT_FOUND_CODE).json({ "status": result["status"], "msg": result["msg"] })
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+ }
+}

@@ -1,26 +1,22 @@
-const mongoQuery = require("@cs7player/login-lib").mongoQuery
+const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 const pbkdf = require("@cs7player/login-lib").pbkdf
 const otp = require("@cs7player/login-lib").otp
 const jwt = require("@cs7player/login-lib").jwt
+const helper = require("../../utils/helper")
 const deviceToken = require("../device_token")
+const emailSender = require("../../utils/email-sender")
 
 exports.signUp = async (reqParams) => {
  try {
-  let { username, email, gender_id, gender_name, password } = reqParams
+  let { username, email, gender_id, gender_name, password, is_verified } = reqParams
   const usernameDetails = await checkUsername(username)
   if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already taken" }
   const emailDetails = await checkEmail(email)
   if (emailDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Email already taken" }
   password = await pbkdf.hashPassword(password)
   created_at = new Date()
-  is_verified = 0
   const result = await mongoQuery.insertOne(USERS, { username, email, gender_id, gender_name, password, is_verified, created_at })
-  const friends = await mongoQuery.insertOne(FRIENDS, { user_id: result["insertedId"], friends: [] })
-  // const otpResult = await otpSender({ username, email })
-  // if(otpResult["status"]){
-  // }else{
-  //  return { "status": SERVICE_UNAVAILABLE_CODE, "msg": SERVICE_UNAVAILABLE_MESSAGE}
-  // }
+  await mongoQuery.insertOne(FRIENDS, { user_id: result["insertedId"], friends: [] })
   return result
  } catch (error) {
   throw error
@@ -68,16 +64,38 @@ exports.login = async (reqParams) => {
  }
 }
 
-exports.verify = async (requestBody) => {
+exports.sendOtp = async (reqParams) => {
  try {
-  const otp = requestBody["otp"]
-  const mail = requestBody["mail"]
-  if (otp == otpJson[mail]) {
-   delete otpJson[mail]
-   return { status: true, msg: "Email verified successfully." }
-  } else return { status: true, msg: "Invalid OTP. Please check and try again." }
+  const { email } = reqParams
+  const userData = await checkEmail(email)
+  if (userData.length > 0) return { status: false, msg: "Email already exists." }
+  const otp = helper.generateOTP()
+  const subject = "OTP for Email Verification"
+  const body = `Your OTP is ${otp} for email verification.`
+  const res = await emailSender.sendEmail(email, subject, body)
+  if (res["status"]) {
+   const insertObj = { otp: otp, status: 0, created_at: new Date() }
+   const insertResult = await mongoQuery.insertOne(OTPS, insertObj)
+   return { status: true, otp_id: insertResult["insertedId"], msg: "OTP Sent Successfully" }
+  }
+  return res
  } catch (error) {
-  return { status: false, data: error }
+  throw error
+ }
+}
+
+exports.verifyOtp = async (reqParams) => {
+ try {
+  const { otp_id, otp } = reqParams
+  const whr = { _id: mongoObjId(otp_id), otp: otp, status: 0 }
+  const pipeline = [{ $match: whr }]
+  const insertResult = await mongoQuery.getDetails(OTPS, pipeline)
+  if (insertResult.length == 0) throw { status: false, msg: "Invalid OTP" }
+  const updateObj = { status: 1 }
+  await mongoQuery.updateOne(OTPS, whr, updateObj)
+  return { status: true, msg: "OTP verified Successfully" }
+ } catch (error) {
+  throw error
  }
 }
 
