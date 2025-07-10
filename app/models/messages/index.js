@@ -14,7 +14,7 @@ exports.send = async (reqParams) => {
   const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
   const notificationParams = {
    sender_id: reqParams["user_id"], receiver_id: reqParams["receiver_id"], title: username, message: msg,
-   data: { type: 2, action: 1, data: { ref_id: receiver_id, username: username } }
+   data: { type: "2", action: "1", data: JSON.stringify({ ref_id: receiver_id, username: username }) }
   }
   await notifications.send(notificationParams)
   const io = getIO()
