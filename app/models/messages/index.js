@@ -37,7 +37,7 @@ exports.update = async (reqParams) => {
    updateObj["is_edited"] = 1
   }
   if ("message_status" in reqParams) updateObj["message_status"] = reqParams["message_status"]
-  updateObj["created_at"] = new Date()
+  updateObj["updated_at"] = new Date()
   const whr = { "_id": mongoObjId(reqParams["msg_id"]) }
   const result = await mongoQuery.updateOne(MESSAGES, whr, updateObj)
   return result || []
@@ -69,8 +69,8 @@ exports.details = async (reqParams) => {
    { $limit: pageLimit }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline)
-  const filter = { receiver_id: user_id, sender_id: friend_id, message_status: 0 }
-  const update = { message_status: 2 }
+  const filter = { receiver_id: user_id, sender_id: friend_id, message_status: { "$lt": 2 } }
+  const update = { message_status: 2, updated_at: new Date() }
   await mongoQuery.updateMany(MESSAGES, filter, update)
   return result
  } catch (error) {

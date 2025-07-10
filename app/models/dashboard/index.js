@@ -44,7 +44,7 @@ exports.chats = async (reqParams) => {
         {
          $and: [
           { $eq: ["$receiver_id", user_id] },
-          { $eq: ["$message_status", 0] }
+          { $lt: ["$message_status", 2] }
          ]
         },
         1,
