@@ -1,5 +1,5 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
-const { getSocketIdFromUserId } = require("../../utils/socketConnection");
+const { getSocketIdFromUserId } = require("../../utils/socketConnection")
 
 exports.chats = async (reqParams) => {
  try {
@@ -33,9 +33,7 @@ exports.chats = async (reqParams) => {
      }
     }
    },
-   {
-    $sort: { created_at: -1 }
-   },
+   { $sort: { created_at: -1 } },
    {
     $group: {
      _id: "$friend_id",
@@ -64,9 +62,7 @@ exports.chats = async (reqParams) => {
      as: "friend_info"
     }
    },
-   {
-    $unwind: "$friend_info"
-   },
+   { $unwind: "$friend_info" },
    {
     $project: {
      _id: 0,
@@ -81,15 +77,16 @@ exports.chats = async (reqParams) => {
      gender_id: "$friend_info.gender_id"
     }
    },
-   {
-    $sort: { "last_message.created_at": -1 }
-   }
+   { $sort: { "last_message.created_at": -1 } }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline2)
   result.forEach(m => {
-   const socketId = getSocketIdFromUserId(m.friend_id);
-   m.is_active = socketId ? 1 : 0;
-  });
+   const socketId = getSocketIdFromUserId(m.friend_id)
+   m.is_active = socketId ? 1 : 0
+  })
+  const whr = { receiver_id: user_id, message_status: 0 }
+  const updateRec = { message_status: 1 }
+  await mongoQuery.updateMany(MESSAGES, whr, updateRec)
   return result
  } catch (error) {
   throw error
