@@ -49,12 +49,14 @@ exports.login = async (reqParams) => {
   delete userObj["_id"]
   delete userObj["password"]
   const tokenRes = await jwt.generateToken(userObj)
+  let device_id = ""
   if (tokenRes) {
    if ("device_token" in reqParams) {
     const params = { user_id: userObj["user_id"], device_token: reqParams["device_token"] }
-    await deviceToken.add(params)
+    const deviceResult = await deviceToken.add(params)
+    device_id = deviceResult["insertedId"]
    }
-   return { "msg": "Login successful.", "data": userObj, "token": tokenRes }
+   return { "msg": "Login successful.", "data": userObj, "token": tokenRes, device_id: device_id || "" }
   }
   else return { "msg": tokenRes["msg"], "status": tokenRes["status_code"] }
  } catch (error) {

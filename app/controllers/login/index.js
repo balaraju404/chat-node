@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await loginMdl.login(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result["msg"], "data": result["data"], "token": result["token"] || "" })
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result["msg"], "data": result["data"], "token": result["token"] || "", "device_id": result["device_id"] || "" })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
