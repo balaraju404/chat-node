@@ -10,21 +10,21 @@ exports.signUp = async (req, res) => {
  }
 }
 
-exports.login = async (req, res) => {
+exports.resetPassword = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
-  const result = await loginMdl.login(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result["msg"], "data": result["data"], "token": result["token"] || "" })
+  const result = await loginMdl.resetPassword(reqParams)
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Password reset successfully." })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
 }
 
-exports.forgetPassword = async (req, res) => {
+exports.login = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
-  const result = await loginMdl.forgetPassword(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Password updated successfully." })
+  const result = await loginMdl.login(reqParams)
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result["msg"], "data": result["data"], "token": result["token"] || "" })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }

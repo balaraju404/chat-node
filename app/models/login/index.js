@@ -1,6 +1,5 @@
 const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 const pbkdf = require("@cs7player/login-lib").pbkdf
-const otp = require("@cs7player/login-lib").otp
 const jwt = require("@cs7player/login-lib").jwt
 const helper = require("../../utils/helper")
 const deviceToken = require("../device_token")
@@ -23,7 +22,7 @@ exports.signUp = async (reqParams) => {
  }
 }
 
-exports.forgetPassword = async (reqParams) => {
+exports.resetPassword = async (reqParams) => {
  try {
   let { email, password } = reqParams
   const userData = await checkEmail(email)
@@ -31,7 +30,6 @@ exports.forgetPassword = async (reqParams) => {
   const _id = userData[0]["_id"]
   password = await pbkdf.hashPassword(password)
   const result = await mongoQuery.updateOne(USERS, { _id }, { password })
-  const otp = await otp({ username, email })
   return result
  } catch (error) {
   throw error
@@ -67,14 +65,12 @@ exports.login = async (reqParams) => {
 exports.sendOtp = async (reqParams) => {
  try {
   const { email } = reqParams
-  const userData = await checkEmail(email)
-  if (userData.length > 0) return { status: false, msg: "Email already exists." }
   const otp = helper.generateOTP()
   const subject = "OTP for Email Verification"
   const body = `Your OTP is ${otp} for email verification.`
   const res = await emailSender.sendEmail(email, subject, body)
   if (res["status"]) {
-   const insertObj = { otp: otp, status: 0, created_at: new Date() }
+   const insertObj = { email: email, otp: otp, status: 0, created_at: new Date() }
    const insertResult = await mongoQuery.insertOne(OTPS, insertObj)
    return { status: true, otp_id: insertResult["insertedId"], msg: "OTP Sent Successfully" }
   }
@@ -114,16 +110,5 @@ const checkEmail = async (email) => {
   return result
  } catch (error) {
   throw error
- }
-}
-
-const otpSender = async (requestBody) => {
- try {
-  const data = { username: requestBody["username"] || "", mail: requestBody["email"] }
-  const result = await otp.sendOTPEmail(data)
-  otpJson[data["mail"]] = result["otp"]
-  return { status: true, data: result }
- } catch (error) {
-  return { status: false, data: error }
  }
 }

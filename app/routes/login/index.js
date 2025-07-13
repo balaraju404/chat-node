@@ -2,7 +2,7 @@ const router = require("express").Router()
 const { check, validationResult } = require("express-validator")
 const loginCtrl = require("../../controllers/login")
 
-router.post("/sign-up", [
+router.post("/sign_up", [
  check("username").isLength({ min: 6, max: 16 }).withMessage("Username must be between 6 and 16 characters long"),
  check("email").isEmail().withMessage("Invalid email format"),
  check("gender_id").isInt({ min: 1 }).withMessage("Invalid gender ID"),
@@ -30,14 +30,14 @@ router.post("/", [
  }
 })
 
-router.put("/", [
+router.post("/reset_password", [
  check("email").isEmail().withMessage("Invalid email format"),
  check("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long")
 ], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  loginCtrl.forgetPassword(req, res)
+  loginCtrl.resetPassword(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message })
  }
@@ -57,7 +57,7 @@ router.post("/send_otp", [
 
 router.post("/verify_otp", [
  check("otp_id").isMongoId().withMessage("Invalid otp id"),
- check("otp").isLength({ min: 6 }).withMessage("Invalid OTP"),
+ check("otp").isLength({ min: 6 }).withMessage("Invalid OTP")
 ], (req, res, next) => {
  try {
   const errors = validationResult(req)
