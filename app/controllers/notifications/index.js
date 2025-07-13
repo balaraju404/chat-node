@@ -35,8 +35,7 @@ exports.details = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await notifications.details(reqParams)
-  if (result["data"]) res.status(200).json({ status: result["status"], data: result["data"], count: result["count"] || 0 })
-  else res.status(200).json({ status: result["status"], msg: result["msg"] })
+  res.status(200).json({ status: result["status"], data: result })
  } catch (error) {
   res.status(500).json({ status: false, msg: "Internal server error", error: error })
  }

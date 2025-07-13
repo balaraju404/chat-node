@@ -36,7 +36,7 @@ exports.update = async (reqParams) => {
   const notification_id = reqParams["notification_id"] || 0
   const status = reqParams["status"] || 0
 
-  const updateRec = { modified_date: new Date(), status: status }
+  const updateRec = { modified_at: new Date(), status: status }
   const whr = { _id: mongoObjId(notification_id) }
 
   await mongoQuery.updateOne(TBL_NOTIFICATIONS, whr, updateRec)
@@ -59,62 +59,20 @@ exports.del = async (reqParams) => {
 
 exports.details = async (reqParams) => {
  try {
-  let limit_count = reqParams["page_limit"] || 0
-  let offset_count = 0
-  if (limit_count > 0) {
-   offset_count = reqParams["page_num"] * limit_count
-  }
-
-  let pipeline = []
   const matchConditions = {}
-  if ("notification_id" in reqParams) {
-   matchConditions._id = new ObjectId(reqParams["notification_id"])
-  }
-  if ("sender_id" in reqParams) {
-   matchConditions.sender_id = reqParams["sender_id"]
-  }
-  if ("receiver_id" in reqParams) {
-   matchConditions.receiver_id = reqParams["receiver_id"]
-  }
-  if ("status" in reqParams) {
-   matchConditions.status = reqParams["status"]
-  }
+  if ("notification_id" in reqParams) matchConditions._id = new ObjectId(reqParams["notification_id"])
+  if ("user_id" in reqParams) matchConditions.receiver_id = reqParams["user_id"]
+  if ("status" in reqParams) matchConditions.status = reqParams["status"]
 
-  if (Object.keys(matchConditions).length > 0) {
-   pipeline.push({
-    $match: matchConditions
-   })
-  }
+  const pipeline = [
+   { $match: matchConditions },
+   { $addFields: { notification_id: "$_id" } },
+   { $project: { _id: 0 } },
+   { $sort: { created_at: -1 } }
+  ]
 
-  pipeline.push({
-   $project: {
-    _id: 0,
-    notification_id: "$_id",
-    sender_id: "$sender_id",
-    receiver_id: "$receiver_id",
-    title: "$title",
-    message: "$message",
-    link: "$link",
-    ref_id: "$ref_id",
-    sent_date: "$sent_date",
-    display_sent_date: { $dateToString: { date: { $toDate: "$sent_date" }, format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
-    modified_date: "$modified_date",
-    status: "$status"
-   }
-  })
-
-  pipeline.push({
-   $sort: { sent_date: -1 }
-  })
-
-  let result
-  if (limit_count > 0) {
-   result = await mongoQuery.getDetails(TBL_NOTIFICATIONS, pipeline)
-  } else {
-   result = await mongoQuery.getDetails(TBL_NOTIFICATIONS, pipeline)
-  }
-  const count = await collection.countDocuments(matchConditions)
-  return { status: true, data: result, count: count }
+  const result = await mongoQuery.getDetails(TBL_NOTIFICATIONS, pipeline)
+  return result
  } catch (error) {
   throw error
  }
@@ -123,20 +81,13 @@ exports.details = async (reqParams) => {
 exports.count = async (reqParams) => {
  try {
   const matchConditions = {}
-  if ("sender_id" in reqParams) {
-   matchConditions.sender_id = reqParams["sender_id"]
-  }
-  if ("receiver_id" in reqParams) {
-   matchConditions.receiver_id = reqParams["receiver_id"]
-  }
+  if ("user_id" in reqParams) matchConditions.receiver_id = reqParams["user_id"]
   if ("status" in reqParams) {
    let status = reqParams["status"] || []
-   if (!Array.isArray(status)) {
-    status = [status]
-   }
+   if (!Array.isArray(status)) status = [status]
    matchConditions.status = { $in: status }
   }
-  const db = getDb()
+  const db = await connectDB()
   const collection = db.collection(TBL_NOTIFICATIONS)
   const count = await collection.countDocuments(matchConditions)
   return { status: true, count: count || 0 }
