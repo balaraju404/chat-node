@@ -1,6 +1,6 @@
 const notificationConn = require("./notification-conn")
 const deviceToken = require("../models/device_token")
-const { mongoObjId } = require("@cs7player/login-lib")
+const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
 exports.send = async (reqParams) => {
  try {
