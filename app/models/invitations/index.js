@@ -111,16 +111,16 @@ exports.accept = async (reqParams) => {
 
 exports.decline = async (reqParams) => {
  try {
-  const flag = reqParams["flag"] || 1
+  const flag = reqParams["isWithdraw"] || 0
   const friend_id = reqParams["friend_id"]
   const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
   const _id = mongoObjId(reqParams["_id"])
   const result = await mongoQuery.deleteOne(INVITATIONS, { _id })
-  if (flag == 1) {
+  if (flag == 0) {
    const notificationParams = { receiver_id: friend_id, title: "Friend Request Rejected", message: `${username} has rejected your friend request.` }
    await notifications.send(notificationParams)
   }
-  result["msg"] = flag == 1 ? "Request rejected successfully" : "Request withdrawn successfully"
+  result["msg"] = flag == 0 ? "Request rejected successfully" : "Request withdrawn successfully"
   return result
  } catch (error) {
   throw error
