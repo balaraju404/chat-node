@@ -7,7 +7,7 @@ exports.send = async (req, res) => {
   const result = await msgMdl.send(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "data": result || [] })
  } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE })
+  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE, error: error?.message || error })
  }
 }
 
@@ -17,7 +17,7 @@ exports.update = async (req, res) => {
   const result = await msgMdl.update(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": UPDATE_SUCCESS })
  } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE, error: error?.message || error })
  }
 }
 
@@ -27,7 +27,7 @@ exports.delete = async (req, res) => {
   const result = await msgMdl.delete(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": DELETE_SUCCESS })
  } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE, error: error?.message || error })
  }
 }
 
@@ -37,6 +37,6 @@ exports.details = async (req, res) => {
   const result = await msgMdl.details(reqParams)
   res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "data": result || [] })
  } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE })
+  res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE, error: error?.message || error })
  }
 }

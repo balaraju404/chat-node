@@ -7,9 +7,10 @@ exports.send = async (reqParams) => {
   const group_id = mongoObjId(reqParams["group_id"])
   const msg = reqParams["msg"]
   const texted_by = mongoObjId(reqParams["user_id"])
+  const delivered_by = [texted_by]
   const seen_by = [texted_by]
   const created_at = new Date()
-  const result = await mongoQuery.insertOne(GROUP_MESSAGES, { group_id, msg, texted_by, seen_by, created_at })
+  const result = await mongoQuery.insertOne(GROUP_MESSAGES, { group_id, msg, texted_by, delivered_by, seen_by, created_at })
   const msg_id = result["insertedId"]
   const groupData = await mongoQuery.getDetails(GROUPS, [{ $match: { _id: group_id } }])
   const memberIds = groupData[0]["members"]
@@ -57,18 +58,11 @@ exports.details = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"])
   const user_id = mongoObjId(reqParams["user_id"])
-  const pageNum = reqParams["page_num"] || 0
+  const pageNum = reqParams["page_num"] || 1
   const pageLimit = reqParams["page_limit"] || 25
-  let pipeline = [
+  const pipeline = [
    { $match: { group_id } },
-   {
-    $lookup: {
-     from: USERS,
-     localField: "texted_by",
-     foreignField: "_id",
-     as: "joinedData"
-    }
-   },
+   { $lookup: { from: USERS, localField: "texted_by", foreignField: "_id", as: "joinedData" } },
    { $unwind: "$joinedData" },
    { $addFields: { "username": "$joinedData.username" } },
    { $project: { msg: 1, texted_by: 1, username: 1, created_at: 1 } },
