@@ -16,7 +16,7 @@ exports.send = async (reqParams) => {
   const memberIds = groupData[0]["members"]
   const groupname = reqParams["groupname"]
   const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
-  const notificationParams = { sender_id: reqParams["user_id"], receiver_id: memberIds, title: groupname, message: username + ": " + msg }
+  const notificationParams = { skip_store: 1, sender_id: reqParams["user_id"], receiver_id: memberIds, title: groupname, message: username + ": " + msg }
   await notifications.send(notificationParams)
   const io = getIO()
   memberIds.forEach(id => {
