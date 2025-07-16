@@ -14,7 +14,7 @@ exports.send = async (reqParams) => {
   const username = reqParams[TOKEN_USER_DATA_KEY]?.["username"]
   const notificationParams = {
    skip_store: 1, sender_id: reqParams["user_id"], receiver_id: reqParams["receiver_id"], title: username, message: msg,
-   data: { type: "2", action: "1", data: JSON.stringify({ ref_id: msg_id, friend_id: receiver_id, username: username }) }
+   data: { type: "2", action: "1", data: JSON.stringify({ ref_id: msg_id, sender_id: sender_id, friend_id: receiver_id, username: username }) }
   }
   await notifications.send(notificationParams)
   const io = getIO()
@@ -32,13 +32,22 @@ exports.send = async (reqParams) => {
 exports.update = async (reqParams) => {
  try {
   const updateObj = {}
+  const msg_id = mongoObjId(reqParams["msg_id"])
   if ("msg" in reqParams) {
    updateObj["msg"] = reqParams["msg"]
    updateObj["is_edited"] = 1
   }
-  if ("message_status" in reqParams) updateObj["message_status"] = reqParams["message_status"]
+  if ("message_status" in reqParams) {
+   updateObj["message_status"] = reqParams["message_status"]
+   const user_id = reqParams["user_id"]
+   const io = getIO()
+   const socketId = getSocketIdFromUserId(user_id)
+   if (socketId) {
+    io.to(socketId).emit("update_msg_status", { _id: msg_id, sender_id: reqParams["user_id"], receiver_id: reqParams["receiver_id"], message_status: reqParams["message_status"] })
+   }
+  }
   updateObj["updated_at"] = new Date()
-  const whr = { "_id": mongoObjId(reqParams["msg_id"]) }
+  const whr = { "_id": msg_id }
   const result = await mongoQuery.updateOne(MESSAGES, whr, updateObj)
   return result || []
  } catch (error) {
